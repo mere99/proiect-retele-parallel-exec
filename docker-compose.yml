@@ -1,0 +1,55 @@
+# Cluster cu 3 noduri hibrid. Pornire: docker compose up --build
+# node1 = radacina cluster; node2/node3 se conecteaza la node1.
+
+services:
+  node1:
+    build: .
+    container_name: p19_node1
+    environment:
+      NODE_NAME: node1
+      NODE_HOST: "0.0.0.0"
+      NODE_PORT: "9001"
+      BOOTSTRAP: ""
+      AUTO_DEMO: "0"
+    ports:
+      - "9001:9001"
+    networks:
+      - cluster_net
+
+  node2:
+    build: .
+    container_name: p19_node2
+    environment:
+      NODE_NAME: node2
+      NODE_HOST: "0.0.0.0"
+      NODE_PORT: "9002"
+      BOOTSTRAP: "node1:9001"
+      AUTO_DEMO: "0"
+    ports:
+      - "9002:9002"
+    depends_on:
+      node1:
+        condition: service_started
+    networks:
+      - cluster_net
+
+  node3:
+    build: .
+    container_name: p19_node3
+    environment:
+      NODE_NAME: node3
+      NODE_HOST: "0.0.0.0"
+      NODE_PORT: "9003"
+      BOOTSTRAP: "node1:9001"
+      AUTO_DEMO: "1"
+    ports:
+      - "9003:9003"
+    depends_on:
+      node1:
+        condition: service_started
+    networks:
+      - cluster_net
+
+networks:
+  cluster_net:
+    driver: bridge
