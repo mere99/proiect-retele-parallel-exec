@@ -15,14 +15,10 @@ Sistem distribuit in care fiecare nod este **hibrid** (server + client), formand
 | Deconectare | inchidere socket + `peer_leave` |
 | Docker | `docker compose up --build` |
 
-## Video demonstrativ
-
-**TODO:** adaugati link-ul YouTube/Drive aici dupa inregistrare.
-
 ## Pornire rapida (Docker)
 
 ```bash
-cd project19-parallel-exec
+cd retele-proiect19
 docker compose up --build
 ```
 
@@ -77,7 +73,7 @@ Nodul cu **load minim** din vederea locala a clusterului; la egalitate se prefer
 ## Structura cod
 
 ```text
-project19-parallel-exec/
+retele-proiect19/
   protocol.py       # framing + send/recv
   cluster_state.py  # peers + load (Lock)
   executor.py       # incarcare dinamica + thread-uri
@@ -88,14 +84,14 @@ project19-parallel-exec/
   README.md
 ```
 
-## Prezentare (idei pentru video 5–7 min)
+## Prezentare live (seminar)
 
 1. `docker compose up --build` – 3 noduri
-2. Loguri `peer join` – propagare
-3. `status` / loguri load – balansare
-4. `exec Calculator square ...` – 4 fire, rezultate pe rand
-5. Stergeti clasa de pe un nod / transfer `class_data`
-6. Oprire un nod – `peer leave`
+2. Loguri `peer join` – propagare in cluster
+3. `status` / loguri `[LOAD]` – balansare
+4. `exec Calculator square 1,2,3,4 4` – executie paralela, rezultate pe fir
+5. (optional) transfer clasa: sterge `loaded_classes/` pe un nod, ruleaza din nou `exec`
+6. (optional) `docker stop p19_node2` – deconectare, `peer leave` in loguri
 
 ## Dependinte
 
