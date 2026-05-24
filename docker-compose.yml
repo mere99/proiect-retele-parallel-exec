@@ -4,7 +4,7 @@
 services:
   node1:
     build: .
-    container_name: p19_node1
+    container_name: rp19_node1
     environment:
       NODE_NAME: node1
       NODE_HOST: "0.0.0.0"
@@ -18,7 +18,7 @@ services:
 
   node2:
     build: .
-    container_name: p19_node2
+    container_name: rp19_node2
     environment:
       NODE_NAME: node2
       NODE_HOST: "0.0.0.0"
@@ -35,7 +35,7 @@ services:
 
   node3:
     build: .
-    container_name: p19_node3
+    container_name: rp19_node3
     environment:
       NODE_NAME: node3
       NODE_HOST: "0.0.0.0"

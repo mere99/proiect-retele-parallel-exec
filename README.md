@@ -49,8 +49,8 @@ In acelasi terminal vezi logurile tuturor nodurilor. Cauta:
 **Loguri doar pentru un nod** (alt terminal):
 
 ```bash
-docker logs -f p19_node1
-docker logs -f p19_node3
+docker logs -f rp19_node1
+docker logs -f rp19_node3
 ```
 
 **Oprire cluster:**
@@ -58,6 +58,21 @@ docker logs -f p19_node3
 ```bash
 docker compose down
 ```
+
+### Rulezi si alte proiecte Docker in paralel?
+
+Da. Proiectul **fresh** / toxwatch (porturi 27017, 8081, etc.) **nu intra in conflict** cu acest proiect (porturi **9001–9003**).
+
+Conflictul apare doar daca exista containere vechi cu acelasi **nume fix** (`p19_node1` de la o rulare anterioara). Containerele acestui repo se numesc **`rp19_node1`**, `rp19_node2`, `rp19_node3`.
+
+Daca tot vezi eroare „container name already in use”:
+
+```bash
+docker rm -f p19_node1 p19_node2 p19_node3
+docker compose up --build
+```
+
+In Docker Desktop: cauta `p19_` sau `rp19_` in lista de containere.
 
 **Demo manual** (node3 cu consola interactiva) – opreste compose, apoi in `docker-compose.yml` seteaza pentru `node3`:
 
@@ -170,7 +185,7 @@ retele-proiect19/
 3. `status` / loguri `[LOAD]` – balansare
 4. `exec Calculator square 1,2,3,4 4` – executie paralela, rezultate pe fir
 5. (optional) transfer clasa: sterge `loaded_classes/` pe un nod, ruleaza din nou `exec`
-6. (optional) `docker stop p19_node2` – deconectare, `peer leave` in loguri
+6. (optional) `docker stop rp19_node2` – deconectare, `peer leave` in loguri
 
 ## Dependinte
 
