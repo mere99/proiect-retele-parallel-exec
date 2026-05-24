@@ -15,38 +15,117 @@ Sistem distribuit in care fiecare nod este **hibrid** (server + client), formand
 | Deconectare | inchidere socket + `peer_leave` |
 | Docker | `docker compose up --build` |
 
-## Pornire rapida (Docker)
+## Cum pornim proiectul
+
+### Ce ai nevoie
+
+- **Docker Desktop** (pornit) – pentru varianta recomandata la evaluare
+- sau **Python 3.10+** – pentru rulare locala in 3 terminale
+- Git (optional, pentru clone)
+
+### Varianta 1 – Docker (recomandat)
+
+Din folderul proiectului (radacina repo-ului, acolo unde este `docker-compose.yml`):
 
 ```bash
 cd retele-proiect19
 docker compose up --build
 ```
 
-- **node1** – radacina cluster (port 9001)
-- **node2**, **node3** – se conecteaza la `node1:9001`
-- **node3** ruleaza demo automat (`AUTO_DEMO=1`): doua executii paralele
+Ce se intampla:
 
-Loguri utile: `[CLUSTER]`, `[LOAD]`, `[EXEC]`, `[RESULT]`.
+1. Se construiesc 3 containere: **node1**, **node2**, **node3**
+2. **node1** (port 9001) – radacina cluster, fara upstream
+3. **node2** (9002) si **node3** (9003) – se conecteaza la `node1:9001`
+4. **node3** ruleaza automat un demo (`AUTO_DEMO=1`): doua executii paralele
 
-## Pornire locala (3 terminale)
+In acelasi terminal vezi logurile tuturor nodurilor. Cauta:
+
+- `[CLUSTER] peer join` – noduri in cluster
+- `[EXEC]` – server ales pentru executie
+- `[RESULT]` – rezultate pe fir
+- `[LOAD]` – grad de incarcare
+
+**Loguri doar pentru un nod** (alt terminal):
 
 ```bash
-# Terminal 1 – radacina
-set NODE_NAME=node1&& set NODE_PORT=9001&& set BOOTSTRAP=&& python node.py
-
-# Terminal 2
-set NODE_NAME=node2&& set NODE_PORT=9002&& set BOOTSTRAP=127.0.0.1:9001&& python node.py
-
-# Terminal 3 – client care cere executii
-set NODE_NAME=node3&& set NODE_PORT=9003&& set BOOTSTRAP=127.0.0.1:9001&& python node.py
+docker logs -f p19_node1
+docker logs -f p19_node3
 ```
 
-In consola node3:
+**Oprire cluster:**
+
+```bash
+docker compose down
+```
+
+**Demo manual** (node3 cu consola interactiva) – opreste compose, apoi in `docker-compose.yml` seteaza pentru `node3`:
+
+`AUTO_DEMO: "0"`, rebuild, si:
+
+```bash
+docker compose run --rm -it node3 python node.py
+```
+
+Comenzi in consola: `status`, `exec Calculator square 1,2,3,4 4`, `quit`.
+
+---
+
+### Varianta 2 – Local, 3 terminale (fara Docker)
+
+Cloneaza / deschide proiectul, apoi deschide **3 terminale** in acelasi folder.
+
+**Windows CMD:**
+
+```bat
+REM Terminal 1 – radacina cluster
+set NODE_NAME=node1
+set NODE_PORT=9001
+set BOOTSTRAP=
+python node.py
+
+REM Terminal 2
+set NODE_NAME=node2
+set NODE_PORT=9002
+set BOOTSTRAP=127.0.0.1:9001
+python node.py
+
+REM Terminal 3 – cereri de executie
+set NODE_NAME=node3
+set NODE_PORT=9003
+set BOOTSTRAP=127.0.0.1:9001
+python node.py
+```
+
+**Git Bash / Linux:**
+
+```bash
+# Terminal 1
+export NODE_NAME=node1 NODE_PORT=9001 BOOTSTRAP=
+python node.py
+
+# Terminal 2
+export NODE_NAME=node2 NODE_PORT=9002 BOOTSTRAP=127.0.0.1:9001
+python node.py
+
+# Terminal 3
+export NODE_NAME=node3 NODE_PORT=9003 BOOTSTRAP=127.0.0.1:9001
+python node.py
+```
+
+In **terminalul 3** (prompt `node>`):
 
 ```text
 node> status
 node> exec Calculator square 1,2,3,4 4
+node> quit
 ```
+
+Format comanda: `exec <Clasa> <metoda> <arg1,arg2,...> <numar_fire>`
+
+Exemplu: `exec Calculator square 5,6,7 3` – metoda `square` pe clasa `Calculator`, 3 fire.
+
+**Oprire:** `quit` in fiecare terminal sau Ctrl+C.
 
 ## Protocol (mesaje JSON cu framing de la curs)
 
